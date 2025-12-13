@@ -1,0 +1,5 @@
+{
+  "name": "Myers Guardian AI",
+  "description": "Enterprise-grade AI automation console with real-time risk monitoring, human-in-the-loop review queues, and emergency kill switches.",
+  "requestFramePermissions": []
+}
