@@ -56,7 +56,6 @@ export const useAppStore = create<AppState>((set, get) => ({
           plan: session.user.user_metadata?.plan || 'free',
         },
       });
-          }
        else {
       set({
         session: {
