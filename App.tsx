@@ -7,6 +7,7 @@ import GhostReportView from './components/GhostReportView';
 import ReviewView from './components/ReviewView';
 import SettingsView from './components/SettingsView';
 import Sidebar from './components/Sidebar';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const {
@@ -52,6 +53,7 @@ export default function App() {
         {activeTab === 'reviews' && <ReviewView />}
         {activeTab === 'settings' && <SettingsView />}
       </main>
+      <Analytics />
     </div>
   );
 }
