@@ -43,7 +43,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     inProgress: 0,
   },
   userRole: 'user',
-  hasCompletedWizard: localStorage.getItem('wizard-completed') === 'true',
+  hasCompletedWizard: typeof window !== 'undefined' && localStorage.getItem('wizard-completed') === 'true',
   // AUTH ACTIONS
   initializeAuth: async () => {
     const { data: { session } } = await supabase.auth.getSession();
