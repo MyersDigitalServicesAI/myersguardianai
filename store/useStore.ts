@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { supabase, Task } from '../services/supabase';
+import { create } from 'zustand';import { supabase, Task } from '../services/supabase';
+import { persist } from 'zustand/middleware';
 
 interface AppState {
   // ... existing state
@@ -29,9 +29,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Initial state
   activeTab: 'dashboard',
   session: {
-    isAuthenticated: false,
-    user: null,
-    plan: null,
+    export const useAppStore = create<AppState>()(persist((set, get) => ({plan: null,
   },
   tasks: [],
   ghostLogs: [],
@@ -189,4 +187,4 @@ export const useAppStore = create<AppState>((set, get) => ({
   // ... rest of your existing actions
   setActiveTab: (tab) => set({ activeTab: tab }),
   setKillSwitch: (value) => set({ killSwitch: value }),
-}));
+}), { name: 'guardian-storage' }));
