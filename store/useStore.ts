@@ -21,6 +21,7 @@ interface AppState {
   createTask: (task: Partial<Task>) => Promise<void>;
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
+    completeWizard: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
