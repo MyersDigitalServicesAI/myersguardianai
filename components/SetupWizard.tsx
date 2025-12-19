@@ -137,12 +137,6 @@ const SetupWizard = () => {
                 {step === 2 && "Configuration"}
                 {step === 3 && "Finalization"}
             </div>
-                  <button 
-            onClick={completeWizard}
-            className="text-gray-400 hover:text-white px-4 py-2 rounded-lg font-bold transition-all"
-          >
-            Skip Setup
-          </button>
           <button 
                 onClick={handleNext}
                 disabled={loading}
