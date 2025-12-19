@@ -34,6 +34,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     user: null,
     plan: null,
   },
+    tasks: [],
   killSwitch: false,
   stats: {
     totalTasks: 0,
