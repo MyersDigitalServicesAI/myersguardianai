@@ -9,6 +9,7 @@ interface AppState {
     plan: string | null;
   };
   tasks: Task[];
+  hasCompletedWizard: boolean;
   
   // Auth actions
   login: (email: string, password: string) => Promise<void>;
@@ -21,6 +22,7 @@ interface AppState {
   createTask: (task: Partial<Task>) => Promise<void>;
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
+  completeWizard: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -113,6 +115,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       tasks: [],
     });
   },
+  
+    completeWizard: () => set({ hasCompletedWizard: true }),
 
   // TASK ACTIONS (connected to Supabase)
   fetchTasks: async () => {
