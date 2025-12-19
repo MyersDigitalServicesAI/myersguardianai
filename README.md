@@ -1,20 +1,48 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🛡️ MyersGuardianAI
 
-# Run and deploy your AI Studio app
+**AI-Powered Task Management & Monitoring System with Real-time Analytics**
 
-This contains everything you need to run your app locally.
+A production-ready SaaS platform built with React, TypeScript, Supabase, and powered by Google Gemini AI.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1A9Dz839pUcw2h8G7_TdDtOvakr324LPu
+---
 
-## Run Locally
+## 🚀 Features
 
-**Prerequisites:**  Node.js
+- ✅ **Real-time Task Management** - Create, update, and track tasks with live sync
+- 🔐 **Secure Authentication** - Email/password auth with Supabase
+- 📊 **Advanced Analytics Dashboard** - Visual insights into your workflow
+- 👻 **Ghost Audit Logs** - Comprehensive activity tracking
+- 🎯 **Priority Management** - Organize tasks by priority levels
+- 🌙 **Dark Mode UI** - Sleek, modern interface
+- 🔄 **Real-time Updates** - Instant synchronization across devices
+- 🛡️ **Row Level Security** - Enterprise-grade data protection
 
+---
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, TypeScript, Vite
+- **State Management**: Zustand
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **AI**: Google Gemini API
+- **Payments**: Stripe
+- **UI**: Tailwind CSS, Lucide Icons, Recharts
+- **Deployment**: Vercel
+
+---
+
+## 📋 Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+- Gemini API key (optional)
+- Stripe account (for payments)
+
+---
+
+## ⚡ Quick Start
+
+### 1. Clone the Repository
+
