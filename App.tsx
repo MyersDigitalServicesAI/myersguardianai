@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useAppStore } from './store/useStore';
 import PaywallView from './components/PaywallView';
+import SetupWizard from './components/SetupWizard';
 import DashboardView from './components/DashboardView';
 import GhostReportView from './components/GhostReportView';
 import ReviewView from './components/ReviewView';
@@ -15,6 +16,7 @@ export default function App() {
     activeTab,
     setActiveTab,
     stats,
+    hasCompletedWizard,
   } = useAppStore();
 
   // Initialize auth on mount
@@ -34,6 +36,11 @@ export default function App() {
   // AUTH GUARD
   if (!session.isAuthenticated) {
     return <PaywallView />;
+  }
+
+    // WIZARD GUARD
+  if (!hasCompletedWizard) {
+    return <SetupWizard />;
   }
 
   
