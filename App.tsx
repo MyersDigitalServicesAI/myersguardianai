@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useAppStore } from './store/useStore';
 import PaywallView from './components/PaywallView';
-import SetupWizard from './components/SetupWizard';
 import DashboardView from './components/DashboardView';
 import GhostReportView from './components/GhostReportView';
 import ReviewView from './components/ReviewView';
@@ -13,7 +12,6 @@ export default function App() {
   const {
     initializeAuth,
     session,
-    hasCompletedWizard,
     activeTab,
     setActiveTab,
     stats,
@@ -38,11 +36,7 @@ export default function App() {
     return <PaywallView />;
   }
 
-  // WIZARD GUARD
-  if (!hasCompletedWizard) {
-    return <SetupWizard />;
-  }
-
+  
   // Main app layout
   return (
     <div className="flex h-screen bg-black">
