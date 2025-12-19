@@ -46,3 +46,14 @@ A production-ready SaaS platform built with React, TypeScript, Supabase, and pow
 
 ### 1. Clone the Repository
 
+
+
+### 🌐 Connect
+
+- **GitHub**: [@MyersDigitalServicesAI](https://github.com/MyersDigitalServicesAI)
+- **Website**: [www.myersdigitalservicesai.com](https://www.myersdigitalservicesai.com)
+- **Email**: contact@myersdigitalservicesai.com
+
+---
+
+**Made with ❤️ by Myers Digital Services AI**
