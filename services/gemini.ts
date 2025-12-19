@@ -8,8 +8,8 @@ if (!GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Gemini 2.0 Flash - Latest model with multimodal capabilities
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+// Gemini Experimental 1206 - Gemini 3.0 with advanced reasoning capabilities
+const model = genAI.getGenerativeModel({ model: 'gemini-exp-1206' });
 
 export interface GeminiMessage {
   role: 'user' | 'model';
