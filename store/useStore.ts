@@ -69,7 +69,6 @@ else {
       
       // Fetch user's tasks
       await get().fetchTasks();
-    }
 
     // Listen for auth changes
     supabase.auth.onAuthStateChange((_event, session) => {
