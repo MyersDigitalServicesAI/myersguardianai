@@ -29,6 +29,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     localStorage.setItem('wizard-completed', 'true');
     set({ hasCompletedWizard: true });
   },  activeTab: 'dashboard',
+    session: {
+    isAuthenticated: undefined,
+    user: null,
+    plan: null,
+  },
   killSwitch: false,
   stats: {
     totalTasks: 0,
@@ -110,7 +115,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
-    completeWizard: () => set({ hasCompletedWizard: true }),
 
   // TASK ACTIONS (connected to Supabase)
   fetchTasks: async () => {
