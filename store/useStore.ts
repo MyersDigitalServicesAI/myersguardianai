@@ -1,174 +1,188 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { Task, Log, Stats, ActiveTab, UserRole, SessionState, Tier } from '../types';
-import { generateMockTasks, generateGhostLogs } from '../services/mockData';
-import { generateToken } from '../services/auth';
+import { supabase, Task } from '../services/supabase';
 
 interface AppState {
-  // Session State
-  session: SessionState;
-  
-  // App State
-  activeTab: ActiveTab;
+  // ... existing state
+  session: {
+    isAuthenticated: boolean;
+    user: any;
+    plan: string | null;
+  };
   tasks: Task[];
-  ghostLogs: Log[];
-  killSwitch: boolean;
-  hasCompletedWizard: boolean; // NEW: Track wizard completion
-  stats: Stats;
-  userRole: UserRole;
-  rateLimits: { vip: number; standard: number };
   
-  // Actions
-  login: (plan: Tier) => void;
-  logout: () => void;
-  completeWizard: () => void; // NEW: Action to complete wizard
-  setActiveTab: (tab: ActiveTab) => void;
-  setKillSwitch: (active: boolean) => void;
-  setRateLimit: (queue: 'vip' | 'standard', value: number) => void;
-  setUserRole: (role: UserRole) => void;
-  addTask: (task: Task) => void;
-  updateTaskStatus: (id: string, status: 'approved' | 'rejected', newText?: string) => void;
-  updateStats: (newStats: Partial<Stats>) => void;
-  resetStats: () => void;
+  // Auth actions
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  initializeAuth: () => Promise<void>;
+  
+  // Task actions
+  fetchTasks: () => Promise<void>;
+  createTask: (task: Partial<Task>) => Promise<void>;
+  updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
+  deleteTask: (id: string) => Promise<void>;
 }
 
-export const useAppStore = create<AppState>()(
-  persist(
-    (set, get) => ({
-      // Initial Session State
+export const useAppStore = create<AppState>((set, get) => ({
+  // Initial state
+  activeTab: 'dashboard',
+  session: {
+    isAuthenticated: false,
+    user: null,
+    plan: null,
+  },
+  tasks: [],
+  ghostLogs: [],
+  killSwitch: false,
+  stats: {
+    totalTasks: 0,
+    completed: 0,
+    pending: 0,
+    inProgress: 0,
+  },
+  userRole: 'user',
+  hasCompletedWizard: false,
+
+  // AUTH ACTIONS
+  initializeAuth: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+      set({
+        session: {
+          isAuthenticated: true,
+          user: session.user,
+          plan: session.user.user_metadata?.plan || 'free',
+        },
+      });
+      
+      // Fetch user's tasks
+      await get().fetchTasks();
+    }
+
+    // Listen for auth changes
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        set({
+          session: {
+            isAuthenticated: true,
+            user: session.user,
+            plan: session.user.user_metadata?.plan || 'free',
+          },
+        });
+        get().fetchTasks();
+      } else {
+        set({
+          session: {
+            isAuthenticated: false,
+            user: null,
+            plan: null,
+          },
+          tasks: [],
+        });
+      }
+    });
+  },
+
+  login: async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (error) throw error;
+  },
+
+  signup: async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    
+    if (error) throw error;
+  },
+
+  logout: async () => {
+    await supabase.auth.signOut();
+    set({
       session: {
         isAuthenticated: false,
-        subscriptionStatus: 'inactive',
+        user: null,
         plan: null,
-        token: null
       },
+      tasks: [],
+    });
+  },
 
-      // Initial App State
-      activeTab: 'dashboard',
-      tasks: generateMockTasks(),
-      ghostLogs: generateGhostLogs(),
-      killSwitch: false,
-      hasCompletedWizard: false, // Default to false
-      userRole: 'admin',
-      rateLimits: { vip: 80, standard: 20 },
-      stats: {
-        totalRuns: 1240,
-        risksCaught: 42,
-        moneySaved: 18600,
-        activeWorkers: 12
-      },
+  // TASK ACTIONS (connected to Supabase)
+  fetchTasks: async () => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-      // Actions
-      login: (plan) => {
-        // Issue JWT
-        const role: UserRole = 'admin'; // Default role for new signups
-        const token = generateToken(role, plan);
-        
-        set({
-          session: { isAuthenticated: true, subscriptionStatus: 'active', plan, token },
-          userRole: role,
-          hasCompletedWizard: false // Reset wizard for new login simulation
-        });
-      },
-
-      logout: () => set({
-        session: { isAuthenticated: false, subscriptionStatus: 'inactive', plan: null, token: null },
-        activeTab: 'dashboard',
-        hasCompletedWizard: false
-      }),
-
-      completeWizard: () => set({ hasCompletedWizard: true }),
-
-      setActiveTab: (tab) => set({ activeTab: tab }),
-      
-      // SECURE ENDPOINT: Kill Switch
-      setKillSwitch: (active) => {
-        const { userRole } = get();
-        if (userRole !== 'admin') {
-          console.error("SECURITY VIOLATION: Unauthorized attempt to toggle Kill Switch.");
-          return;
-        }
-        set({ killSwitch: active });
-      },
-
-      // SECURE ENDPOINT: Rate Limits
-      setRateLimit: (queue, value) => {
-        const { userRole, rateLimits } = get();
-        if (userRole !== 'admin') {
-           console.error("SECURITY VIOLATION: Unauthorized attempt to modify Rate Limits.");
-           return;
-        }
-        set({
-            rateLimits: { ...rateLimits, [queue]: value }
-        });
-      },
-      
-      // Simulation Helper: allows impersonating roles for demo
-      setUserRole: (role) => {
-         const { session } = get();
-         // Regenerate token to reflect the simulated role change for consistency
-         if (session.plan) {
-             const newToken = generateToken(role, session.plan);
-             set({ 
-                 userRole: role,
-                 session: { ...session, token: newToken }
-             });
-         } else {
-             set({ userRole: role });
-         }
-      },
-      
-      addTask: (task) => set((state) => {
-        const newTasks = [task, ...state.tasks];
-        if (newTasks.length > 100) newTasks.length = 100;
-        return { tasks: newTasks };
-      }),
-      
-      // SECURE ENDPOINT: Task Approval
-      updateTaskStatus: (id, status, newText) => {
-        const { userRole } = get();
-        // RBAC Check: Only admins can write to the database (approve/reject)
-        if (userRole !== 'admin') {
-            console.error("SECURITY VIOLATION: Unauthorized attempt to update task status.");
-            return;
-        }
-
-        set((state) => ({
-            tasks: state.tasks.map(t => 
-            t.id === id 
-                ? { ...t, status, aiDraft: newText || t.aiDraft } 
-                : t
-            ),
-            stats: status === 'approved' && newText 
-            ? { ...state.stats, moneySaved: state.stats.moneySaved + 50 } 
-            : state.stats
-        }));
-      },
-
-      updateStats: (newStats) => set((state) => ({
-        stats: { ...state.stats, ...newStats }
-      })),
-
-      resetStats: () => set({
-        stats: {
-            totalRuns: 1240,
-            risksCaught: 42,
-            moneySaved: 18600,
-            activeWorkers: 12
-        }
-      })
-    }),
-    {
-      name: 'myers-guardian-storage',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ 
-        killSwitch: state.killSwitch, 
-        userRole: state.userRole,
-        stats: state.stats,
-        session: state.session,
-        rateLimits: state.rateLimits,
-        hasCompletedWizard: state.hasCompletedWizard
-      }),
+    if (error) {
+      console.error('Error fetching tasks:', error);
+      return;
     }
-  )
-);
+
+    set({ tasks: data || [] });
+    
+    // Update stats
+    const completed = data?.filter(t => t.status === 'completed').length || 0;
+    const pending = data?.filter(t => t.status === 'pending').length || 0;
+    const inProgress = data?.filter(t => t.status === 'in_progress').length || 0;
+    
+    set({
+      stats: {
+        totalTasks: data?.length || 0,
+        completed,
+        pending,
+        inProgress,
+      },
+    });
+  },
+
+  createTask: async (task: Partial<Task>) => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert([{
+        title: task.title,
+        description: task.description,
+        status: task.status || 'pending',
+        priority: task.priority || 'medium',
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    await get().fetchTasks();
+  },
+
+  updateTask: async (id: string, updates: Partial<Task>) => {
+    const { error } = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) throw error;
+    
+    await get().fetchTasks();
+  },
+
+  deleteTask: async (id: string) => {
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    
+    await get().fetchTasks();
+  },
+
+  // ... rest of your existing actions
+  setActiveTab: (tab) => set({ activeTab: tab }),
+  setKillSwitch: (value) => set({ killSwitch: value }),
+}));
