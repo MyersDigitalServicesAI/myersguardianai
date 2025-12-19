@@ -1,14 +1,21 @@
 import { useEffect } from 'react';
 import { useAppStore } from './store/useStore';
+import PaywallView from './components/PaywallView';
+import SetupWizard from './components/SetupWizard';
+import DashboardView from './components/DashboardView';
+import GhostReportView from './components/GhostReportView';
+import ReviewView from './components/ReviewView';
+import SettingsView from './components/SettingsView';
+import Sidebar from './components/Sidebar';
 
 export default function App() {
-  const { 
+  const {
     initializeAuth,
     session,
     hasCompletedWizard,
-    activeTab, 
+    activeTab,
     setActiveTab,
-    // ... rest
+    stats,
   } = useAppStore();
 
   // Initialize auth on mount
@@ -35,7 +42,16 @@ export default function App() {
     return <SetupWizard />;
   }
 
+  // Main app layout
   return (
-    // ... rest of your app
+    <div className="flex h-screen bg-black">
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <main className="flex-1 overflow-auto">
+        {activeTab === 'dashboard' && <DashboardView stats={stats} />}
+        {activeTab === 'ghost-reports' && <GhostReportView />}
+        {activeTab === 'reviews' && <ReviewView />}
+        {activeTab === 'settings' && <SettingsView />}
+      </main>
+    </div>
   );
 }
