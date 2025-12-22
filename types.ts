@@ -1,6 +1,6 @@
 export type Tier = 'standard' | 'enterprise';
 export type QueueType = 'standard-queue' | 'vip-queue';
-export type ActiveTab = 'dashboard' | 'review' | 'ghost' | 'settings';
+export type ActiveTab = 'dashboard' | 'reviews' | 'ghost-reports' | 'settings';
 export type UserRole = 'admin' | 'viewer' | 'auditor';
 
 export interface Task {
@@ -31,15 +31,17 @@ export interface Stats {
   activeWorkers: number;
 }
 
-export interface CompetitorMetric {
+export interface Tier {
   name: string;
-  hallucinationRate: number;
-  avgLatency: number;
+  price: string;
+  confidence: string;
+  queueTime: string;
+  features: string[];
 }
 
-export interface SessionState {
-  isAuthenticated: boolean;
-  subscriptionStatus: 'active' | 'inactive' | 'trial';
-  plan: Tier | null;
-  token: string | null; // JWT Token
+export interface PricingTierOption {
+  tier: 'standard' | 'vip' | 'enterprise';
+  name: string;
+  price: string;
+  features: string[];
 }
