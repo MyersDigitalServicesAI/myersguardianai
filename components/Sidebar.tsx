@@ -13,7 +13,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     { id: 'reviews', icon: CheckCircle, label: 'Review Queue' },
     { id: 'ghost-reports', icon: FileText, label: 'Ghost Reports' },
     { id: 'settings', icon: Settings, label: 'Settings' },
-  ] as const;
+  ];
 
   return (
     <aside className="w-64 border-r border-gray-800 bg-gray-950 p-6 flex flex-col h-full">
