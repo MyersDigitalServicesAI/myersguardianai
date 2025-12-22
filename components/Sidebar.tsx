@@ -10,8 +10,8 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const navItems = [
     { id: 'dashboard', icon: Activity, label: 'Overview' },
-    { id: 'review', icon: CheckCircle, label: 'Review Queue' },
-    { id: 'ghost', icon: FileText, label: 'Ghost Reports' },
+    { id: 'reviews', icon: CheckCircle, label: 'Review Queue' },
+    { id: 'ghost-reports', icon: FileText, label: 'Ghost Reports' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ] as const;
 
@@ -43,12 +43,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
 
       <div className="mt-auto">
         <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 rounded-xl border border-gray-700">
-          <div className="text-xs text-gray-400 mb-1">System Status</div>
-          <div className="flex items-center text-green-400 text-sm font-bold">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-            Temporal Worker Online
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-400">System Status</span>
+            <div className="flex items-center space-x-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-green-400">Temporal Worker Online</span>
+            </div>
           </div>
-          <div className="text-xs text-gray-500 mt-2 font-mono">v3.0.1-stable</div>
+          <p className="text-xs text-gray-500">v3.0.1-stable</p>
         </div>
       </div>
     </aside>
